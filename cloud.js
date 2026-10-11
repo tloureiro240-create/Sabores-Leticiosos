@@ -193,8 +193,9 @@ function installCloudHandlers() {
     await loadCloudData();
   };
 
+  const oldRecipeSubmit = $('#recipeForm').onsubmit;
   $('#recipeForm').onsubmit = async e => {
-    if (!cloudUser) return;
+    if (!cloudUser) return oldRecipeSubmit.call($('#recipeForm'), e);
 
     e.preventDefault();
 
@@ -224,8 +225,9 @@ function installCloudHandlers() {
     cloudToast('Receita guardada na conta.');
   };
 
+  const oldShopSubmit = $('#shopForm').onsubmit;
   $('#shopForm').onsubmit = async e => {
-    if (!cloudUser) return;
+    if (!cloudUser) return oldShopSubmit.call($('#shopForm'), e);
 
     e.preventDefault();
 
