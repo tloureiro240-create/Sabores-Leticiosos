@@ -76,3 +76,7 @@ body.dark .install-btn{background:#f2e9ff;color:#2b2140}
 .family-legacy blockquote{margin:18px 0 0;padding:14px 18px;border-left:4px solid var(--primary);border-radius:0 14px 14px 0;background:color-mix(in srgb,var(--surface) 70%,transparent);color:var(--primary2);font-weight:800;font-size:1.05rem;line-height:1.5}
 body.dark .family-legacy{background:linear-gradient(135deg,#21182f,#2d2140)}
 @media(max-width:620px){.family-legacy{grid-template-columns:1fr;padding:22px 20px}.family-legacy-mark{width:46px;height:46px}.family-legacy blockquote{font-size:.98rem}}
+
+/* Título principal mais compacto */
+.hero h1{font-size:clamp(2rem,4vw,3.2rem);line-height:1.08;max-width:760px}
+@media(max-width:620px){.hero h1{font-size:2rem;line-height:1.1}}
