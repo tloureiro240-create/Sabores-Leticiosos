@@ -1,11 +1,11 @@
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const K={r:'sl_recipes',s:'sl_shop',t:'sl_theme'};let recipes=load(K.r,[]),shop=load(K.s,[]),myFilter='all',onlineFilter='all';
+const K={r:'sl_recipes',s:'sl_shop',t:'sl_theme'};let recipes=load(K.r,[]),shop=load(K.s,[]),myFilter='all',onlineFilter='all',portugalLoaded=false;
 function load(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}
 function save(){localStorage.setItem(K.r,JSON.stringify(recipes));localStorage.setItem(K.s,JSON.stringify(shop));render()}
 function id(){return Date.now()+'-'+Math.random().toString(16).slice(2)}
 function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove('show'),2200)}
-function go(v){$$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.go===v));location.hash=v}
+function go(v){$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.go===v));location.hash=v;if(v==='portuguesas')loadPortuguese()}
 function normText(v=''){return String(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
 function normalizeShopName(v=''){return normText(v).replace(/\s+/g,' ')}
 function mergeQty(a='',b=''){a=(a||'').trim();b=(b||'').trim();if(!a)return b;if(!b)return a;if(a===b)return a+' + '+b;return a+' + '+b}
@@ -49,6 +49,22 @@ function normalize(m){
   return{externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:m.strCategory||'Online',description:m.strInstructions||'',ingredients:ing,steps:(m.strInstructions||'').split(/\r?\n+/).filter(Boolean)}
 }
 const onlineCategories={dessert:'Dessert',pasta:'Pasta',meat:'Beef',fish:'Seafood',chicken:'Chicken',vegetarian:'Vegetarian'};
+async function loadPortuguese(force=false){
+  if(portugalLoaded&&!force)return;
+  const status=$('#portugueseStatus'),grid=$('#portugueseRecipes');
+  if(!status||!grid)return;
+  status.textContent='A carregar receitas portuguesas…';
+  try{
+    const d=await fetch('https://www.themealdb.com/api/json/v1/1/filter.php?a=Portuguese').then(r=>r.json());
+    const ms=(d.meals||[]).map(m=>({externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:'Portuguesa',description:''}));
+    window.online={...(window.online||{}),...Object.fromEntries(ms.map(m=>[m.externalId,m]))};
+    portugalLoaded=true;
+    status.textContent=ms.length?ms.length+' receita(s) portuguesa(s) encontrada(s).':'Não encontrei receitas portuguesas neste momento.';
+    grid.innerHTML=ms.map(m=>card(m,true)).join('')||'<p class="muted">Não há receitas portuguesas disponíveis.</p>';
+  }catch{
+    status.textContent='Não foi possível carregar as receitas portuguesas. Tenta novamente daqui a pouco.';
+  }
+}
 async function searchCategory(key){
   if(key==='all'){ $('#searchStatus').textContent='Escreve o nome de uma receita ou escolhe uma categoria.';$('#searchResults').innerHTML='';return}
   const cat=onlineCategories[key];if(!cat)return;
@@ -106,4 +122,4 @@ function delShop(i){shop=shop.filter(x=>x.id!==i);save()}
 function clearBought(){const n=shop.filter(x=>x.done).length;if(!n)return toast('Ainda não há produtos comprados.');shop=shop.filter(x=>!x.done);save();toast('Produtos comprados removidos.')}
 $('#clearBought').onclick=clearBought;
 $('#themeBtn').onclick=()=>{document.body.classList.toggle('dark');let d=document.body.classList.contains('dark');localStorage.setItem(K.t,d?'dark':'light');$('#themeBtn').textContent=d?'☀':'☾'};if(localStorage.getItem(K.t)==='dark'){document.body.classList.add('dark');$('#themeBtn').textContent='☀'}
-let start=(location.hash||'#inicio').slice(1);go(['inicio','pesquisar','minhas','favoritos','compras'].includes(start)?start:'inicio');render();Object.assign(window,{fav,openRecipe,editRecipe,openOnline,saveOnline,addToShop,delRecipe,toggleShop,delShop,clearBought,mergeQty,normalizeShopName});
+let start=(location.hash||'#inicio').slice(1);go(['inicio','pesquisar','portuguesas','minhas','favoritos','compras'].includes(start)?start:'inicio');render();Object.assign(window,{fav,openRecipe,editRecipe,openOnline,saveOnline,addToShop,delRecipe,toggleShop,delShop,clearBought,mergeQty,normalizeShopName,loadPortuguese});
