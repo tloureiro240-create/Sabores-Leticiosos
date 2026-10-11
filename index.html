@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Sabores Leticiosos">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=20261011-3">
+<link rel="stylesheet" href="styles.css?v=20261011-4">
 </head>
 <body>
 <header class="topbar">
@@ -33,6 +33,13 @@
 <section id="pesquisar" class="view">
   <div class="page-head"><span class="eyebrow">DESCOBRIR</span><h1>Pesquisar receitas</h1><p>Pesquisa pelo nome ou explora por categoria.</p></div>
   <form id="searchForm" class="search"><input id="searchInput" placeholder="Ex.: pasta, chicken, cake..."><button class="btn primary">Pesquisar</button></form>
+  <div class="video-import-card">
+    <div>
+      <strong>🎬 Viste uma receita no TikTok?</strong>
+      <p>Cola o link do vídeo e criamos um rascunho da receita para editares e guardares.</p>
+    </div>
+    <button id="openVideoImportBtn" class="btn primary" type="button">Importar do TikTok</button>
+  </div>
   <div class="filter-bar" id="onlineFilters">
     <button class="filter-chip active" type="button" data-search-category="all">Todas</button>
     <button class="filter-chip" type="button" data-search-category="dessert">🍰 Sobremesas</button>
@@ -104,13 +111,38 @@
 </form>
 </dialog>
 
+<dialog id="videoImport">
+    <button class="close" data-close>×</button>
+    <form id="videoImportForm">
+      <span class="eyebrow">IMPORTAR DE VÍDEO</span>
+      <h2>Transformar TikTok em receita</h2>
+      <p>Cola o link de um vídeo público do TikTok. O site lê a descrição disponível e prepara um rascunho para confirmares.</p>
+
+      <label>Link do TikTok
+        <input id="videoImportUrl" type="url" required placeholder="https://www.tiktok.com/@.../video/...">
+      </label>
+
+      <label>Texto/legenda do vídeo <span class="muted">(opcional)</span>
+        <textarea id="videoImportText" rows="6" placeholder="Se a receita estiver escrita no vídeo ou na legenda, podes colar o texto aqui para melhorar o resultado."></textarea>
+      </label>
+
+      <div id="videoImportPreview" class="video-import-preview" hidden></div>
+      <p id="videoImportStatus" class="muted"></p>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn secondary" data-close>Cancelar</button>
+        <button class="btn primary" type="submit">Criar rascunho</button>
+      </div>
+    </form>
+  </dialog>
+
 <dialog id="detail"><button class="close" data-close>×</button><div id="detailBody"></div></dialog>
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=20261011-3"></script>
-<script src="app.js?v=20261011-3"></script>
-<script src="cloud.js?v=20261011-3"></script>
-<script src="pwa.js?v=20261011-3"></script>
+<script src="supabase-config.js?v=20261011-4"></script>
+<script src="app.js?v=20261011-4"></script>
+<script src="cloud.js?v=20261011-4"></script>
+<script src="pwa.js?v=20261011-4"></script>
 <script>
 document.querySelectorAll('.bottom-nav [data-go]').forEach(function(btn){
   btn.addEventListener('click', function(){
