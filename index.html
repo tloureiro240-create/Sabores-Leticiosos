@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sabores Leticiosos</title>
+<meta name="description" content="Sabores Leticiosos — o vosso livro de receitas.">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#inicio"><img src="assets/icon.svg" alt=""><div><strong>Sabores Leticiosos</strong><small>Receitas feitas com carinho</small></div></a>
+  <button id="themeBtn" class="icon-btn">☾</button>
+</header>
+
+<main class="shell">
+<section id="inicio" class="view active">
+  <div class="hero">
+    <div><span class="eyebrow">SABORES LETICIOSOS</span><h1>Receitas que sabem a casa.</h1>
+    <p>Guarda as vossas receitas, encontra ideias online, cria favoritos e prepara a lista de compras.</p>
+    <div class="actions"><button class="btn primary" data-go="pesquisar">Pesquisar receitas</button><button class="btn secondary" data-new>+ Nova receita</button></div></div>
+    <div class="hero-card">🍓<strong>Hoje cozinhas o quê?</strong><span>Descobre novas ideias e guarda as melhores.</span></div>
+  </div>
+  <div class="stats"><article><span>Minhas receitas</span><strong id="nRecipes">0</strong></article><article><span>Favoritos</span><strong id="nFavs">0</strong></article><article><span>Compras</span><strong id="nShop">0</strong></article></div>
+  <h2>Últimas receitas</h2><div id="recent" class="grid"></div>
+</section>
+
+<section id="pesquisar" class="view">
+  <div class="page-head"><span class="eyebrow">DESCOBRIR</span><h1>Pesquisar receitas</h1><p>Pesquisa receitas online.</p></div>
+  <form id="searchForm" class="search"><input id="searchInput" placeholder="Ex.: pasta, chicken, cake..."><button class="btn primary">Pesquisar</button></form>
+  <p id="searchStatus" class="muted">Escreve o nome de uma receita.</p><div id="searchResults" class="grid"></div>
+</section>
+
+<section id="minhas" class="view">
+  <div class="page-row"><div><span class="eyebrow">O NOSSO LIVRO</span><h1>Minhas Receitas</h1></div><button class="btn primary" data-new>+ Nova receita</button></div>
+  <input id="mySearch" class="wide-input" placeholder="Pesquisar nas minhas receitas…"><div id="myRecipes" class="grid"></div>
+</section>
+
+<section id="favoritos" class="view"><div class="page-head"><span class="eyebrow">AS MELHORES</span><h1>Favoritos</h1></div><div id="favoriteRecipes" class="grid"></div></section>
+
+<section id="compras" class="view">
+  <div class="page-head"><span class="eyebrow">ORGANIZAÇÃO</span><h1>Lista de Compras</h1></div>
+  <form id="shopForm" class="shop-form"><input id="shopName" required placeholder="Produto"><input id="shopQty" placeholder="Quantidade"><button class="btn primary">Adicionar</button></form>
+  <div id="shopList" class="shop-list"></div>
+</section>
+</main>
+
+<nav class="bottom-nav">
+<button class="active" data-go="inicio">⌂<small>Início</small></button>
+<button data-go="pesquisar">⌕<small>Pesquisar</small></button>
+<button data-go="minhas">▣<small>Receitas</small></button>
+<button data-go="favoritos">♡<small>Favoritos</small></button>
+<button data-go="compras">🛒<small>Compras</small></button>
+</nav>
+
+<dialog id="editor">
+<button class="close" data-close>×</button>
+<form id="recipeForm">
+<h2 id="editorTitle">Nova receita</h2>
+<input id="recipeId" type="hidden">
+<label>Nome<input id="rName" required></label>
+<div class="two"><label>Categoria<input id="rCategory" placeholder="Ex.: Sobremesas"></label><label>Tempo<input id="rTime" placeholder="Ex.: 45 min"></label></div>
+<label>Foto (URL)<input id="rImage" type="url" placeholder="https://..."></label>
+<label>Descrição<textarea id="rDescription" rows="3"></textarea></label>
+<h3>Ingredientes</h3><div id="ingredients"></div><button type="button" class="btn secondary small" id="addIngredient">+ Ingrediente</button>
+<h3>Preparação</h3><div id="steps"></div><button type="button" class="btn secondary small" id="addStep">+ Passo</button>
+<label>Notas<textarea id="rNotes" rows="3"></textarea></label>
+<div class="dialog-actions"><button type="button" class="btn secondary" data-close>Cancelar</button><button class="btn primary">Guardar</button></div>
+</form>
+</dialog>
+
+<dialog id="detail"><button class="close" data-close>×</button><div id="detailBody"></div></dialog>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body></html>
