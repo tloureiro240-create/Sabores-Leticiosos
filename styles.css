@@ -78,5 +78,5 @@ body.dark .family-legacy{background:linear-gradient(135deg,#21182f,#2d2140)}
 @media(max-width:620px){.family-legacy{grid-template-columns:1fr;padding:22px 20px}.family-legacy-mark{width:46px;height:46px}.family-legacy blockquote{font-size:.98rem}}
 
 /* Título principal mais compacto */
-.hero h1{font-size:clamp(2rem,4vw,3.2rem);line-height:1.08;max-width:760px}
-@media(max-width:620px){.hero h1{font-size:2rem;line-height:1.1}}
+.hero h1{font-size:clamp(1.6rem,3vw,2.5rem);line-height:1.12;max-width:760px}
+@media(max-width:620px){.hero h1{font-size:1.65rem;line-height:1.14}}
