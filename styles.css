@@ -61,3 +61,9 @@ body.dark .install-btn{background:#f2e9ff;color:#2b2140}
   .bottom-nav button{font-size:.9rem;padding:7px 1px}
   .bottom-nav small{font-size:.56rem}
 }
+
+.video-import-card{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:16px 0 18px;padding:18px 20px;border:1px solid var(--border);border-radius:18px;background:linear-gradient(135deg,var(--surface),var(--soft));box-shadow:0 10px 28px rgba(86,58,130,.07)}
+.video-import-card strong{display:block;font-size:1.02rem}.video-import-card p{margin:5px 0 0}
+.video-import-preview{display:flex;align-items:center;gap:12px;margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--soft)}
+.video-import-preview img{width:72px;height:92px;object-fit:cover;border-radius:11px}.video-import-preview strong,.video-import-preview small{display:block}.video-import-preview small{margin-top:5px;color:var(--muted)}
+@media(max-width:620px){.video-import-card{align-items:flex-start;flex-direction:column}.video-import-card .btn{width:100%}}
