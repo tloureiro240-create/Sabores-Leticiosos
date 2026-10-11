@@ -101,7 +101,7 @@ function show(r,ext){$('#detailBody').innerHTML=`${r.image?`<img class="detail-i
 function addIng(x={name:'',qty:''}){let d=document.createElement('div');d.className='row';d.innerHTML=`<input class="ingName" placeholder="Ingrediente" value="${esc(x.name)}"><input class="ingQty" placeholder="Quantidade" value="${esc(x.qty)}"><button type="button" class="remove">×</button>`;d.querySelector('.remove').onclick=()=>d.remove();$('#ingredients').appendChild(d)}
 function addStep(x=''){let d=document.createElement('div');d.className='row step-row';d.innerHTML=`<input class="stepText" placeholder="Passo" value="${esc(x)}"><button type="button" class="remove">×</button>`;d.querySelector('.remove').onclick=()=>d.remove();$('#steps').appendChild(d)}
 $('#addIngredient').onclick=()=>addIng();$('#addStep').onclick=()=>addStep();
-function openEditor(r=null){$('#recipeForm').reset();$('#recipeId').value=r?.id||'';$('#editorTitle').textContent=r?'Editar receita':'Nova receita';$('#rName').value=r?.name||'';$('#rCategory').value=r?.category||'';$('#rTime').value=r?.time||'';$('#rImage').value=r?.image||'';$('#rDescription').value=r?.description||'';$('#rNotes').value=r?.notes||'';$('#ingredients').innerHTML='';(r?.ingredients?.length?r.ingredients:[{}]).forEach(addIng);$('#steps').innerHTML='';(r?.steps?.length?r.steps:['']).forEach(addStep);$('#editor').showModal()}
+function openEditor(r=null){$('#recipeForm').reset();$('#recipeId').value=r?.id||'';$('#editorTitle').textContent=r?.id?'Editar receita':'Nova receita';$('#rName').value=r?.name||'';$('#rCategory').value=r?.category||'';$('#rTime').value=r?.time||'';$('#rImage').value=r?.image||'';$('#rDescription').value=r?.description||'';$('#rNotes').value=r?.notes||'';$('#ingredients').innerHTML='';(r?.ingredients?.length?r.ingredients:[{}]).forEach(addIng);$('#steps').innerHTML='';(r?.steps?.length?r.steps:['']).forEach(addStep);$('#editor').showModal()}
 function editRecipe(i){openEditor(recipes.find(x=>x.id===i))}
 $('#recipeForm').onsubmit=e=>{e.preventDefault();let rid=$('#recipeId').value,data={name:$('#rName').value.trim(),category:$('#rCategory').value.trim(),time:$('#rTime').value.trim(),image:$('#rImage').value.trim(),description:$('#rDescription').value.trim(),notes:$('#rNotes').value.trim(),ingredients:$$('.row').filter(x=>x.querySelector('.ingName')).map(x=>({name:x.querySelector('.ingName').value.trim(),qty:x.querySelector('.ingQty').value.trim()})).filter(x=>x.name),steps:$$('.stepText').map(x=>x.value.trim()).filter(Boolean)};if(rid){let i=recipes.findIndex(x=>x.id===rid);recipes[i]={...recipes[i],...data}}else recipes.unshift({...data,id:id(),favorite:false,source:'local'});save();$('#editor').close();go('minhas');toast('Receita guardada.')};
 function delRecipe(i){if(confirm('Apagar esta receita?')){recipes=recipes.filter(x=>x.id!==i);save();$('#detail').close()}}
@@ -121,5 +121,133 @@ function toggleShop(i){let x=shop.find(x=>x.id===i);if(x){x.done=!x.done;save()}
 function delShop(i){shop=shop.filter(x=>x.id!==i);save()}
 function clearBought(){const n=shop.filter(x=>x.done).length;if(!n)return toast('Ainda não há produtos comprados.');shop=shop.filter(x=>!x.done);save();toast('Produtos comprados removidos.')}
 $('#clearBought').onclick=clearBought;
+
+function recipeNameFromVideoText(text=''){
+  const clean=String(text)
+    .replace(/https?:\/\/\S+/gi,' ')
+    .replace(/#[\p{L}\p{N}_]+/gu,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+  if(!clean)return 'Receita do TikTok';
+  return clean.split(/[.!?]\n]|[.!?]\s/)[0].trim().slice(0,80)||'Receita do TikTok';
+}
+
+function parseVideoRecipeText(text=''){
+  const ingredients=[],steps=[];
+  const lines=String(text)
+    .replace(/\r/g,'')
+    .split(/\n|•|·/)
+    .map(x=>x.trim())
+    .filter(Boolean);
+
+  let mode='';
+  const ingredientHeading=/^(ingredientes?|ingredients?)\s*:?$/i;
+  const stepHeading=/^(prepara(?:ç|c)ão|modo de preparo|modo de prepara(?:ç|c)ão|passos?|instructions?|preparation)\s*:?$/i;
+  const qty=/^(\d+(?:[.,]\d+)?|\d+\/\d+|½|¼|¾|⅓|⅔)\s*(kg|g|mg|l|ml|cl|dl|chávena(?:s)?|xicara(?:s)?|xícara(?:s)?|colher(?:es)?(?:\s+de\s+(?:sopa|chá))?|c\.\s*(?:sopa|chá)|cup(?:s)?|tbsp|tsp|unidades?|un\.?|dentes?)?\s+(.+)$/i;
+
+  for(const original of lines){
+    const line=original.replace(/^[-–—]\s*/,'').trim();
+    if(ingredientHeading.test(line)){mode='ingredients';continue}
+    if(stepHeading.test(line)){mode='steps';continue}
+
+    const numbered=line.match(/^\d+[.)-]\s*(.+)$/);
+    if(mode==='steps'||numbered){
+      const value=(numbered?.[1]||line).trim();
+      if(value)steps.push(value);
+      continue;
+    }
+
+    const match=line.match(qty);
+    if(mode==='ingredients'||match){
+      if(match){
+        ingredients.push({
+          qty:[match[1],match[2]||''].join(' ').trim(),
+          name:match[3].trim()
+        });
+      }else if(line.length<120){
+        ingredients.push({qty:'',name:line.replace(/^[-–—]\s*/,'').trim()});
+      }
+    }
+  }
+
+  return {ingredients,steps};
+}
+
+const videoImportBtn=$('#openVideoImportBtn');
+if(videoImportBtn){
+  videoImportBtn.onclick=()=>{
+    $('#videoImportForm').reset();
+    $('#videoImportStatus').textContent='';
+    $('#videoImportPreview').hidden=true;
+    $('#videoImportPreview').innerHTML='';
+    $('#videoImport').showModal();
+  };
+}
+
+const videoImportForm=$('#videoImportForm');
+if(videoImportForm){
+  videoImportForm.onsubmit=async e=>{
+    e.preventDefault();
+
+    const url=$('#videoImportUrl').value.trim();
+    const extra=$('#videoImportText').value.trim();
+    const status=$('#videoImportStatus');
+    const preview=$('#videoImportPreview');
+
+    if(!/https?:\/\/(?:www\.|vm\.|vt\.)?tiktok\.com\//i.test(url)){
+      status.textContent='Cola um link válido do TikTok.';
+      return;
+    }
+
+    status.textContent='A analisar o vídeo…';
+    preview.hidden=true;
+
+    try{
+      const res=await fetch('/.netlify/functions/tiktok-oembed?url='+encodeURIComponent(url));
+      const data=await res.json();
+
+      if(!res.ok)throw new Error(data.error||'Não foi possível ler este vídeo.');
+
+      const sourceText=(extra||data.title||'').trim();
+      const parsed=parseVideoRecipeText(sourceText);
+      const name=recipeNameFromVideoText(sourceText||data.title);
+      const notes=[
+        'Fonte TikTok: '+url,
+        data.author_name?'Criador: '+data.author_name:''
+      ].filter(Boolean).join('\n');
+
+      preview.hidden=false;
+      preview.innerHTML=
+        (data.thumbnail_url?'<img src="'+esc(data.thumbnail_url)+'" alt="">':'')+
+        '<div><strong>'+esc(name)+'</strong>'+
+        (data.author_name?'<small>'+esc(data.author_name)+'</small>':'')+
+        '</div>';
+
+      status.textContent='Vídeo encontrado. A preparar o rascunho…';
+
+      setTimeout(()=>{
+        $('#videoImport').close();
+        openEditor({
+          name,
+          category:'TikTok',
+          image:data.thumbnail_url||'',
+          description:sourceText,
+          ingredients:parsed.ingredients,
+          steps:parsed.steps,
+          notes
+        });
+
+        if(parsed.ingredients.length||parsed.steps.length){
+          toast('Rascunho criado. Confirma os ingredientes e passos antes de guardar.');
+        }else{
+          toast('Vídeo encontrado. Completa os ingredientes e passos antes de guardar.');
+        }
+      },250);
+    }catch(err){
+      status.textContent=err.message||'Não foi possível importar este vídeo.';
+    }
+  };
+}
+
 $('#themeBtn').onclick=()=>{document.body.classList.toggle('dark');let d=document.body.classList.contains('dark');localStorage.setItem(K.t,d?'dark':'light');$('#themeBtn').textContent=d?'☀':'☾'};if(localStorage.getItem(K.t)==='dark'){document.body.classList.add('dark');$('#themeBtn').textContent='☀'}
 let start=(location.hash||'#inicio').slice(1);go(['inicio','pesquisar','portuguesas','minhas','favoritos','compras'].includes(start)?start:'inicio');render();Object.assign(window,{fav,openRecipe,editRecipe,openOnline,saveOnline,addToShop,delRecipe,toggleShop,delShop,clearBought,mergeQty,normalizeShopName,loadPortuguese});
