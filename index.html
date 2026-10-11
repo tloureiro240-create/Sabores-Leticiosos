@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Sabores Leticiosos">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=20261011-4">
+<link rel="stylesheet" href="styles.css?v=20261011-5">
 </head>
 <body>
 <header class="topbar">
@@ -21,12 +21,23 @@
 <main class="shell">
 <section id="inicio" class="view active">
   <div class="hero">
-    <div><span class="eyebrow">SABORES LETICIOSOS</span><h1>Receitas com sabor a casa.</h1>
+    <div><span class="eyebrow">SABORES LETICIOSOS</span><h1>Sabores que atravessam gerações, memórias que ficam à mesa.</h1>
     <p>Guarda as vossas receitas, encontra ideias online, cria favoritos e prepara a lista de compras.</p>
     <div class="actions"><button class="btn primary" data-go="pesquisar">Pesquisar receitas</button><button class="btn secondary" data-new>+ Nova receita</button><button id="installAppBtn" class="btn install-btn" hidden>⬇ Instalar app</button></div></div>
     <div class="hero-card">🍓<strong>Hoje cozinhas o quê?</strong><span>Descobre novas ideias e guarda as melhores.</span></div>
   </div>
   <div class="stats"><article><span>Minhas receitas</span><strong id="nRecipes">0</strong></article><article><span>Favoritos</span><strong id="nFavs">0</strong></article><article><span>Compras</span><strong id="nShop">0</strong></article></div>
+
+  <section class="family-legacy">
+    <div class="family-legacy-mark">♡</div>
+    <div>
+      <span class="eyebrow">UM LEGADO DE SABORES</span>
+      <h2>Receitas que continuam na família</h2>
+      <p>As receitas de família são mais do que simples instruções de cozinha. Guardam histórias, tradições, momentos e memórias que fazem parte de quem somos. Ao preservá-las e passá-las às próximas gerações, mantemos viva uma parte da nossa família, permitindo que filhos, netos e futuros familiares possam descobrir, preparar e continuar os sabores que marcaram a nossa história. Porque algumas receitas não foram feitas apenas para serem cozinhadas — foram feitas para serem lembradas e partilhadas.</p>
+      <blockquote>“Sabores que atravessam gerações, memórias que ficam à mesa.”</blockquote>
+    </div>
+  </section>
+
   <h2>Últimas receitas</h2><div id="recent" class="grid"></div>
 </section>
 
