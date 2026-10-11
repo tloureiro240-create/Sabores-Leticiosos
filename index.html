@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Sabores Leticiosos">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20261011-3">
 </head>
 <body>
 <header class="topbar">
@@ -107,8 +107,23 @@
 <dialog id="detail"><button class="close" data-close>×</button><div id="detailBody"></div></dialog>
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script src="app.js"></script>
-<script src="cloud.js"></script>
-<script src="pwa.js"></script>
+<script src="supabase-config.js?v=20261011-3"></script>
+<script src="app.js?v=20261011-3"></script>
+<script src="cloud.js?v=20261011-3"></script>
+<script src="pwa.js?v=20261011-3"></script>
+<script>
+document.querySelectorAll('.bottom-nav [data-go]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var target = btn.getAttribute('data-go');
+    document.querySelectorAll('.view').forEach(function(v){
+      v.classList.toggle('active', v.id === target);
+    });
+    document.querySelectorAll('.bottom-nav [data-go]').forEach(function(b){
+      b.classList.toggle('active', b === btn);
+    });
+    location.hash = target;
+    if (target === 'portuguesas' && typeof loadPortuguese === 'function') loadPortuguese();
+  });
+});
+</script>
 </body></html>
