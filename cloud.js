@@ -264,17 +264,23 @@ function setupCloudAccount() {
 
       <div id="cloudLoggedOut">
         <h2>Conta Sabores Leticiosos</h2>
-        <p>Recebe um link por e-mail para entrar. Não precisas de palavra-passe.</p>
+        <p>Entra com o teu e-mail e palavra-passe, ou cria uma conta nova.</p>
 
         <label>
           E-mail
           <input id="cloudEmail" type="email" autocomplete="email" placeholder="teu@email.com">
         </label>
 
+        <label>
+          Palavra-passe
+          <input id="cloudPassword" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres">
+        </label>
+
         <p id="cloudAuthMessage" class="muted"></p>
 
         <div class="dialog-actions">
-          <button id="cloudSendLink" class="btn primary" type="button">Enviar link</button>
+          <button id="cloudSignUp" class="btn secondary" type="button">Criar conta</button>
+          <button id="cloudSignIn" class="btn primary" type="button">Entrar</button>
         </div>
       </div>
 
@@ -298,21 +304,56 @@ function setupCloudAccount() {
     $('#cloudAuth').showModal();
   };
 
-  $('#cloudSendLink').onclick = async () => {
+  $('#cloudSignIn').onclick = async () => {
     const email = $('#cloudEmail').value.trim();
-    if (!email) return $('#cloudAuthMessage').textContent = 'Escreve o teu e-mail.';
+    const password = $('#cloudPassword').value;
 
-    const res = await cloud.auth.signInWithOtp({
+    if (!email) return $('#cloudAuthMessage').textContent = 'Escreve o teu e-mail.';
+    if (!password) return $('#cloudAuthMessage').textContent = 'Escreve a tua palavra-passe.';
+
+    $('#cloudAuthMessage').textContent = 'A entrar…';
+
+    const res = await cloud.auth.signInWithPassword({ email, password });
+
+    if (res.error) {
+      $('#cloudAuthMessage').textContent = res.error.message;
+      return;
+    }
+
+    $('#cloudAuthMessage').textContent = 'Sessão iniciada.';
+    $('#cloudAuth').close();
+  };
+
+  $('#cloudSignUp').onclick = async () => {
+    const email = $('#cloudEmail').value.trim();
+    const password = $('#cloudPassword').value;
+
+    if (!email) return $('#cloudAuthMessage').textContent = 'Escreve o teu e-mail.';
+    if (!password || password.length < 6) {
+      return $('#cloudAuthMessage').textContent = 'A palavra-passe deve ter pelo menos 6 caracteres.';
+    }
+
+    $('#cloudAuthMessage').textContent = 'A criar conta…';
+
+    const res = await cloud.auth.signUp({
       email,
+      password,
       options: {
-        shouldCreateUser: true,
         emailRedirectTo: location.origin
       }
     });
 
-    if (res.error) return $('#cloudAuthMessage').textContent = res.error.message;
+    if (res.error) {
+      $('#cloudAuthMessage').textContent = res.error.message;
+      return;
+    }
 
-    $('#cloudAuthMessage').textContent = 'Enviámos um link para o teu e-mail.';
+    if (res.data.session) {
+      $('#cloudAuthMessage').textContent = 'Conta criada e sessão iniciada.';
+      $('#cloudAuth').close();
+    } else {
+      $('#cloudAuthMessage').textContent = 'Conta criada. Confirma o e-mail e depois entra com a tua palavra-passe.';
+    }
   };
 
   $('#cloudSignOut').onclick = async () => {
