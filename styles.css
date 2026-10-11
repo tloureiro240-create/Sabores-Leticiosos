@@ -18,3 +18,37 @@ body{
   background:#eadfff;
   color:#6842ad;
 }
+
+/* Melhorias visuais */
+.topbar{gap:10px;box-shadow:0 8px 30px rgba(89,56,140,.06)}
+.brand img{border-radius:14px;box-shadow:0 8px 20px rgba(111,70,184,.22)}
+.btn{transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{box-shadow:0 10px 24px rgba(111,70,184,.25)}
+.install-btn{background:#2b2140;color:#fff}
+.hero{position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(143,99,216,.10);right:-90px;top:-110px;pointer-events:none}
+.stats article{box-shadow:0 8px 24px rgba(86,58,130,.06)}
+.card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(86,58,130,.12);border-color:#cab3ec}
+.media img{transition:transform .35s ease}.card:hover .media img{transform:scale(1.035)}
+input:focus,textarea:focus{outline:2px solid rgba(143,99,216,.22);border-color:var(--primary)}
+.filter-bar{display:flex;gap:8px;overflow-x:auto;padding:4px 0 18px;scrollbar-width:none}.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{white-space:nowrap;border:1px solid var(--border);background:var(--surface);color:var(--muted);padding:9px 13px;border-radius:999px;font-weight:750}
+.filter-chip.active{background:linear-gradient(135deg,#9b6de0,#7147b8);color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(111,70,184,.18)}
+.smart-note{margin:12px 0 4px;padding:11px 14px;border-radius:13px;background:var(--soft);color:var(--primary2);font-size:.9rem;font-weight:700}
+.remove{background:#eee4ff;color:#6842ad}
+.toast{background:#2b2140}
+body.dark .hero{background:linear-gradient(135deg,#21182f 0%,#2a1d3b 55%,#34244b 100%)}
+body.dark .bottom-nav button.active{background:#3a2952;color:#d4b9fb}
+body.dark .install-btn{background:#f2e9ff;color:#2b2140}
+@media(max-width:620px){
+  body{padding-bottom:96px}
+  .topbar{padding:10px 12px}.brand img{width:40px;height:40px}.topbar .btn{padding:9px 10px;font-size:.8rem}
+  .hero{border-radius:22px;min-height:auto}.hero-card{display:block;min-height:150px;margin-top:8px}
+  .actions{justify-content:flex-start}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .stats article{min-width:0}.stats span{font-size:.78rem}.stats strong{font-size:1.35rem}
+  .filter-bar{margin-right:-14px;padding-right:14px}
+  dialog{border-radius:20px;padding:20px}
+}

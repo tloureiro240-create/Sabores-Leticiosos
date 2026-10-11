@@ -1,0 +1,19 @@
+{
+  "name": "Sabores Leticiosos",
+  "short_name": "Sabores",
+  "description": "O vosso livro de receitas, favoritos e lista de compras.",
+  "start_url": "/#inicio",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f2ff",
+  "theme_color": "#7a4fc2",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

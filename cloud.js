@@ -152,24 +152,36 @@ function installCloudHandlers() {
     const r = recipes.find(x => x.id === recipeId);
     if (!r) return;
 
-    const rows = (r.ingredients || [])
-      .filter(x => x.name)
-      .map(x => ({
-        household_id: cloudHousehold,
-        created_by: cloudUser.id,
-        name: x.name,
-        quantity: x.qty || '',
-        recipe_name: r.name,
-        completed: false
-      }));
+    const grouped = new Map();
+    for (const ing of (r.ingredients || []).filter(x => x.name)) {
+      const key = normalizeShopName(ing.name);
+      if (!grouped.has(key)) grouped.set(key, { name: ing.name, qty: ing.qty || '' });
+      else grouped.get(key).qty = mergeQty(grouped.get(key).qty, ing.qty || '');
+    }
 
-    if (rows.length) {
-      const res = await cloud.from('shopping_items').insert(rows);
-      if (res.error) return cloudToast(res.error.message);
+    for (const item of grouped.values()) {
+      const existing = shop.find(x => normalizeShopName(x.name) === normalizeShopName(item.name));
+      if (existing) {
+        const res = await cloud.from('shopping_items').update({
+          quantity: mergeQty(existing.qty, item.qty),
+          completed: false
+        }).eq('id', existing.id);
+        if (res.error) return cloudToast(res.error.message);
+      } else {
+        const res = await cloud.from('shopping_items').insert({
+          household_id: cloudHousehold,
+          created_by: cloudUser.id,
+          name: item.name,
+          quantity: item.qty || '',
+          recipe_name: r.name,
+          completed: false
+        });
+        if (res.error) return cloudToast(res.error.message);
+      }
     }
 
     await loadCloudData();
-    cloudToast('Ingredientes adicionados.');
+    cloudToast('Ingredientes adicionados e repetidos agrupados.');
   };
 
   const oldToggleShop = window.toggleShop;
@@ -235,18 +247,32 @@ function installCloudHandlers() {
     const qty = $('#shopQty').value.trim();
     if (!name) return;
 
-    const res = await cloud.from('shopping_items').insert({
-      household_id: cloudHousehold,
-      created_by: cloudUser.id,
-      name,
-      quantity: qty,
-      completed: false
-    });
+    const existing = shop.find(x => normalizeShopName(x.name) === normalizeShopName(name));
+    const res = existing
+      ? await cloud.from('shopping_items').update({ quantity: mergeQty(existing.qty, qty), completed: false }).eq('id', existing.id)
+      : await cloud.from('shopping_items').insert({
+          household_id: cloudHousehold,
+          created_by: cloudUser.id,
+          name,
+          quantity: qty,
+          completed: false
+        });
 
     if (res.error) return cloudToast(res.error.message);
 
     e.target.reset();
     await loadCloudData();
+  };
+
+  const oldClearBought = window.clearBought;
+  window.clearBought = async function() {
+    if (!cloudUser) return oldClearBought();
+    const ids = shop.filter(x => x.done).map(x => x.id);
+    if (!ids.length) return cloudToast('Ainda não há produtos comprados.');
+    const res = await cloud.from('shopping_items').delete().in('id', ids);
+    if (res.error) return cloudToast(res.error.message);
+    await loadCloudData();
+    cloudToast('Produtos comprados removidos.');
   };
 }
 
@@ -316,7 +342,7 @@ function setupCloudAccount() {
     const res = await cloud.auth.signInWithPassword({ email, password });
 
     if (res.error) {
-      $('#cloudAuthMessage').textContent = res.error.message;
+      $('#cloudAuthMessage').textContent = /invalid login credentials/i.test(res.error.message) ? 'E-mail ou palavra-passe incorretos.' : res.error.message;
       return;
     }
 
