@@ -80,3 +80,6 @@ body.dark .family-legacy{background:linear-gradient(135deg,#21182f,#2d2140)}
 /* Título principal mais compacto */
 .hero h1{font-size:clamp(1.6rem,3vw,2.5rem);line-height:1.12;max-width:760px}
 @media(max-width:620px){.hero h1{font-size:1.65rem;line-height:1.14}}
+
+/* Seletor de idioma e animação de abertura */
+.language-control{display:flex;align-items:center;gap:5px;margin:0 4px 0 auto;font-size:.9rem}.language-control select{border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);padding:9px 5px;font:inherit;max-width:105px}#splashScreen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--bg);pointer-events:all}#splashScreen img{width:min(48vw,230px);aspect-ratio:1;object-fit:contain;animation:splashEnter .8s ease both}#splashScreen.finish{background:transparent;pointer-events:none;transition:background .4s}#splashScreen.finish img{animation:splashExit .8s cubic-bezier(.25,.7,.2,1) forwards}@keyframes splashEnter{from{opacity:0;transform:scale(.65)}to{opacity:1;transform:scale(1)}}@keyframes splashExit{to{opacity:0;transform:translate(calc(-50vw + 58px),calc(-50vh + 54px)) scale(.2)}}@media(prefers-reduced-motion:reduce){#splashScreen img,#splashScreen.finish img{animation:none}#splashScreen.finish{opacity:0}}
