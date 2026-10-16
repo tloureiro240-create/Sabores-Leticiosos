@@ -1,6 +1,6 @@
 let deferredInstall=null;
 const installBtn=document.querySelector('#installAppBtn');
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=20261016-3',{updateViaCache:'none'}).catch(()=>{}))}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=20261016-4',{updateViaCache:'none'}).catch(()=>{}))}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;if(installBtn)installBtn.hidden=false});
 if(installBtn){
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
