@@ -92,3 +92,11 @@ body.dark .family-legacy{background:linear-gradient(135deg,#21182f,#2d2140)}
 @keyframes logoWelcome{0%{opacity:0;transform:scale(.35) rotate(-9deg)}45%{opacity:1;transform:scale(1.14) rotate(3deg)}72%{transform:scale(.96) rotate(-1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes logoLeave{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translate(calc(-50vw + 55px),calc(-50vh + 50px)) scale(.18)}}
 @media(prefers-reduced-motion:reduce){#splashScreen img,#splashScreen.finish img{animation:none!important}}
+
+/* Abertura discreta para ecrãs de telemóvel */
+#splashScreen{background:#f7f2ff!important;transition:opacity .6s ease!important}
+#splashScreen img{width:min(34vw,145px)!important;max-height:145px!important;border-radius:24px;box-shadow:0 8px 24px rgba(55,23,73,.12);filter:none!important;animation:subtleLogoWelcome 1.7s ease-out both!important}
+#splashScreen.finish img{animation:subtleLogoLeave .85s ease-in-out forwards!important}
+@keyframes subtleLogoWelcome{0%{opacity:0;transform:scale(.9) translateY(9px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes subtleLogoLeave{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.94) translateY(-7px)}}
+@media(prefers-reduced-motion:reduce){#splashScreen img,#splashScreen.finish img{animation:none!important}}
