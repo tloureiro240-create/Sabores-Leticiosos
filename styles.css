@@ -100,3 +100,8 @@ body.dark .family-legacy{background:linear-gradient(135deg,#21182f,#2d2140)}
 @keyframes subtleLogoWelcome{0%{opacity:0;transform:scale(.9) translateY(9px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes subtleLogoLeave{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.94) translateY(-7px)}}
 @media(prefers-reduced-motion:reduce){#splashScreen img,#splashScreen.finish img{animation:none!important}}
+
+/* Full logo artwork: retain the complete ring and its native square proportions. */
+.brand img{width:68px;height:68px;object-fit:contain;border-radius:0;box-shadow:none;flex-shrink:0}
+#splashScreen img{width:clamp(220px,48vw,340px)!important;height:auto!important;max-height:min(64vh,340px)!important;aspect-ratio:1;object-fit:contain;border-radius:0!important;box-shadow:none!important}
+@media(max-width:600px){.topbar{flex-wrap:wrap;gap:8px}.brand{flex:1;min-width:0}.brand img{width:58px;height:58px}.brand strong{font-size:.95rem}.brand small{font-size:.7rem}.language-control{margin-left:auto}.topbar .btn{flex-shrink:0}}

@@ -1,0 +1,23 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+(async()=>{
+ const root=require('node:path').resolve(__dirname,'..')+'/';let lang='fr',requests=0;
+ const context={window:{SaboresLanguage:{get:()=>lang}},localStorage:{getItem:()=>null,setItem:()=>{}},document:{addEventListener:()=>{},querySelectorAll:()=>[]},card:()=>'',show:()=>{},openEditor:()=>{},render:()=>{},renderShop:()=>{},shop:[],openOnline:()=>{},openRecipe:()=>{},editRecipe:()=>{},toast:()=>{},$:()=>({onsubmit:()=>{}}),fetch:async(u,o)=>{requests++;const d=JSON.parse(o.body);return {ok:true,json:async()=>({texts:d.texts.map(t=>d.target+':'+t)})}},console};
+ vm.createContext(context);vm.runInContext(fs.readFileSync(root+'recipe-language.js','utf8'),context);
+ const recipe={language:'en',name:'Soup',ingredients:[{name:'salt',qty:'2 g'}],steps:['Mix.'],id:'original'};
+ const before=JSON.stringify(recipe);const translated=await context.window.SaboresRecipes.translated(recipe);
+ assert.equal(translated.name,'fr:Soup');assert.equal(translated.ingredients[0].name,'fr:salt');assert.equal(translated.steps[0],'fr:Mix.');assert.equal(JSON.stringify(recipe),before);
+ const count=requests;await context.window.SaboresRecipes.translated(recipe);assert.equal(requests,count);
+ lang='pt';const pt=await context.window.SaboresRecipes.translated(recipe);assert.equal(pt.name,'pt:Soup');
+ const original=await context.window.SaboresRecipes.translated({name:'Sopa',language:'pt'});assert.equal(original.name,'Sopa');
+ const {handler}=require(root+'netlify/functions/translate.js');
+ assert.equal((await handler({httpMethod:'GET'})).statusCode,405);
+ assert.equal((await handler({httpMethod:'POST',body:JSON.stringify({texts:['x'],source:'auto',target:'fr'})})).statusCode,400);
+ const previous=global.fetch;
+ global.fetch=async()=>({ok:true,json:async()=>({responseStatus:429,quotaFinished:true,responseData:{translatedText:'QUOTA'}})});
+ assert.equal((await handler({httpMethod:'POST',body:JSON.stringify({texts:['Soup'],source:'en',target:'pt'})})).statusCode,503);
+ let seen='';global.fetch=async url=>{seen=String(url);return {ok:true,json:async()=>({title:'Soup',provider_name:'YouTube'})}};
+ const video=require(root+'netlify/functions/tiktok-oembed.js').handler;
+ assert.equal((await video({queryStringParameters:{url:'https://youtube.com.evil.test/watch?v=x'}})).statusCode,400);
+ const result=await video({queryStringParameters:{url:'https://www.youtube.com/watch?v=x'}});assert.equal(result.statusCode,200);assert.ok(seen.startsWith('https://www.youtube.com/oembed?'));global.fetch=previous;
+ console.log('PASS: recipe FR/PT translation, originals preserved, cache reuse, provider quota handling, YouTube import and host validation');
+})().catch(e=>{console.error(e);process.exit(1)});

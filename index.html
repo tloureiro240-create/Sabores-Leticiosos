@@ -8,13 +8,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Sabores Leticiosos">
-<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo-completo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css?v=20261016-5">
+<link rel="stylesheet" href="styles.css?v=20261021-2">
 </head>
-<body>\n<div id="splashScreen" aria-hidden="true"><img src="assets/icon.svg" alt=""></div>
+<body>
+<div id="splashScreen" aria-hidden="true"><img src="assets/logo-completo.svg" alt=""></div>
 <header class="topbar">
-  <a class="brand" href="#inicio"><img src="assets/icon.svg" alt=""><div><strong>Sabores Leticiosos</strong><small>Receitas feitas com carinho</small></div></a>
+  <a class="brand" href="#inicio"><img src="assets/logo-completo.svg" alt=""><div><strong>Sabores Leticiosos</strong><small>Receitas feitas com carinho</small></div></a>
   <button id="themeBtn" class="icon-btn" aria-label="Mudar tema">☾</button>
 </header>
 
@@ -43,13 +44,13 @@
 
 <section id="pesquisar" class="view">
   <div class="page-head"><span class="eyebrow">DESCOBRIR</span><h1>Pesquisar receitas</h1><p>Pesquisa pelo nome ou explora por categoria.</p></div>
-  <form id="searchForm" class="search"><input id="searchInput" placeholder="Ex.: pasta, chicken, cake..."><button class="btn primary">Pesquisar</button></form>
+  <form id="searchForm" class="search"><input id="searchInput" placeholder="Ex.: massa, frango, bolo..."><button class="btn primary">Pesquisar</button></form>
   <div class="video-import-card">
     <div>
-      <strong>🎬 Viste uma receita no TikTok?</strong>
+      <strong>🎬 Viste uma receita no TikTok ou YouTube?</strong>
       <p>Cola o link do vídeo e criamos um rascunho da receita para editares e guardares.</p>
     </div>
-    <button id="openVideoImportBtn" class="btn primary" type="button">Importar do TikTok</button>
+    <button id="openVideoImportBtn" class="btn primary" type="button">Importar de vídeo</button>
   </div>
   <div class="filter-bar" id="onlineFilters">
     <button class="filter-chip active" type="button" data-search-category="all">Todas</button>
@@ -126,13 +127,14 @@
     <button class="close" data-close>×</button>
     <form id="videoImportForm">
       <span class="eyebrow">IMPORTAR DE VÍDEO</span>
-      <h2>Transformar TikTok em receita</h2>
-      <p>Cola o link de um vídeo público do TikTok. O site lê a descrição disponível e prepara um rascunho para confirmares.</p>
+      <h2>Transformar vídeo em receita</h2>
+      <p>Cola um link do TikTok ou YouTube e o texto da receita. O título do vídeo não contém a receita completa: cola os ingredientes e a preparação para os importar e traduzir.</p>
 
-      <label>Link do TikTok
-        <input id="videoImportUrl" type="url" required placeholder="https://www.tiktok.com/@.../video/...">
+      <label>Link do TikTok ou YouTube
+        <input id="videoImportUrl" type="url" required placeholder="https://www.youtube.com/watch?v=...">
       </label>
 
+      <label>Idioma do texto original<select id="videoSourceLanguage"><option value="pt">Português</option><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option><option value="de">Deutsch</option></select></label>
       <label>Texto/legenda do vídeo <span class="muted">(opcional)</span>
         <textarea id="videoImportText" rows="6" placeholder="Se a receita estiver escrita no vídeo ou na legenda, podes colar o texto aqui para melhorar o resultado."></textarea>
       </label>
@@ -151,10 +153,11 @@
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=20261011-4"></script>
-<script src="app.js?v=20261011-4"></script>
+<script src="app.js?v=20261021-1"></script>
 <script src="cloud.js?v=20261011-4"></script>
 <script src="pwa.js?v=20261016-5"></script>
-<script src="i18n.js?v=20261016-5"></script>
+<script src="i18n.js?v=20261021-1"></script>
+<script src="recipe-language.js?v=20261021-1"></script>
 <script>
 document.querySelectorAll('.bottom-nav [data-go]').forEach(function(btn){
   btn.addEventListener('click', function(){

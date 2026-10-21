@@ -5,11 +5,12 @@ exports.handler = async (event) => {
     const parsed = new URL(input);
     const host = parsed.hostname.toLowerCase();
 
-    if (!(host === 'tiktok.com' || host.endsWith('.tiktok.com'))) {
+    const youtube=['youtube.com','www.youtube.com','m.youtube.com','youtu.be'].includes(host);
+    if (parsed.protocol!=='https:' || !(youtube || host === 'tiktok.com' || host.endsWith('.tiktok.com'))) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'O link tem de ser do TikTok.' })
+        body: JSON.stringify({ error: 'O link tem de ser do TikTok ou YouTube.' })
       };
     }
 
@@ -27,7 +28,7 @@ exports.handler = async (event) => {
     }
 
     const response = await fetch(
-      'https://www.tiktok.com/oembed?url=' + encodeURIComponent(target),
+      (youtube?'https://www.youtube.com/oembed?format=json&url=':'https://www.tiktok.com/oembed?url=') + encodeURIComponent(target),
       { headers: { 'User-Agent': 'Mozilla/5.0' } }
     );
 
@@ -35,7 +36,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'O TikTok não disponibilizou dados deste vídeo. Confirma se o vídeo é público.' })
+        body: JSON.stringify({ error: 'Não foi possível obter os dados deste vídeo. Confirma se o vídeo é público.' })
       };
     }
 
@@ -52,7 +53,7 @@ exports.handler = async (event) => {
         author_name: data.author_name || '',
         author_url: data.author_url || '',
         thumbnail_url: data.thumbnail_url || '',
-        provider_name: data.provider_name || 'TikTok'
+        provider_name: data.provider_name || (youtube?'YouTube':'TikTok')
       })
     };
   } catch {

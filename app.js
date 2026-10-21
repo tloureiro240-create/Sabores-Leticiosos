@@ -5,7 +5,7 @@ function save(){localStorage.setItem(K.r,JSON.stringify(recipes));localStorage.s
 function id(){return Date.now()+'-'+Math.random().toString(16).slice(2)}
 function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove('show'),2200)}
-function go(v){$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.go===v));location.hash=v;if(v==='portuguesas')loadPortuguese()}
+function go(v){$$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.go===v));location.hash=v;if(v==='portuguesas')loadPortuguese()}
 function normText(v=''){return String(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
 function normalizeShopName(v=''){return normText(v).replace(/\s+/g,' ')}
 function mergeQty(a='',b=''){a=(a||'').trim();b=(b||'').trim();if(!a)return b;if(!b)return a;if(a===b)return a+' + '+b;return a+' + '+b}
@@ -32,21 +32,21 @@ document.addEventListener('click',e=>{
 function card(r,ext=false){return `<article class="card"><div class="media">${r.image?`<img src="${esc(r.image)}" alt="${esc(r.name)}">`:'<div class="placeholder">🍽️</div>'}${ext?'':`<button class="fav" onclick="fav('${r.id}')">${r.favorite?'♥':'♡'}</button>`}</div><div class="card-body"><div class="meta">${r.category?`<span class="pill">${esc(r.category)}</span>`:''}${r.time?`<span class="pill">⏱ ${esc(r.time)}</span>`:''}</div><h3>${esc(r.name)}</h3><p>${esc((r.description||'').slice(0,100))}</p><div class="card-actions"><button class="btn secondary" onclick="${ext?`openOnline('${r.externalId}')`:`openRecipe('${r.id}')`}">Ver</button>${ext?`<button class="btn primary" onclick="saveOnline('${r.externalId}')">Guardar</button>`:`<button class="btn" onclick="editRecipe('${r.id}')">Editar</button>`}</div></div></article>`}
 function render(){
   $('#nRecipes').textContent=recipes.length;$('#nFavs').textContent=recipes.filter(x=>x.favorite).length;$('#nShop').textContent=shop.filter(x=>!x.done).length;
-  $('#recent').innerHTML=recipes.slice(0,3).map(card).join('')||'<p class="muted">Ainda não tens receitas guardadas.</p>';
+  $('#recent').innerHTML=recipes.slice(0,3).map(r=>card(r)).join('')||'<p class="muted">Ainda não tens receitas guardadas.</p>';
   renderMine();
-  $('#favoriteRecipes').innerHTML=recipes.filter(x=>x.favorite).map(card).join('')||'<p class="muted">Ainda não tens favoritos.</p>';
+  $('#favoriteRecipes').innerHTML=recipes.filter(x=>x.favorite).map(r=>card(r)).join('')||'<p class="muted">Ainda não tens favoritos.</p>';
   renderShop()
 }
 function renderMine(){
   const q=normText($('#mySearch').value||'');
   const list=recipes.filter(r=>normText(r.name+' '+(r.description||'')+' '+(r.category||'')).includes(q)&&categoryMatch(r,myFilter));
-  $('#myRecipes').innerHTML=list.map(card).join('')||'<p class="muted">Nenhuma receita encontrada com estes filtros.</p>'
+  $('#myRecipes').innerHTML=list.map(r=>card(r)).join('')||'<p class="muted">Nenhuma receita encontrada com estes filtros.</p>'
 }
 $('#mySearch').oninput=renderMine;
 function fav(i){let r=recipes.find(x=>x.id===i);if(r){r.favorite=!r.favorite;save()}}
 function normalize(m){
   let ing=[];for(let i=1;i<=20;i++){let n=(m['strIngredient'+i]||'').trim(),q=(m['strMeasure'+i]||'').trim();if(n)ing.push({name:n,qty:q})}
-  return{externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:m.strCategory||'Online',description:m.strInstructions||'',ingredients:ing,steps:(m.strInstructions||'').split(/\r?\n+/).filter(Boolean)}
+  return{language:'en',externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:m.strCategory||'Online',description:m.strInstructions||'',ingredients:ing,steps:(m.strInstructions||'').split(/\r?\n+/).filter(Boolean)}
 }
 const onlineCategories={dessert:'Dessert',pasta:'Pasta',meat:'Beef',fish:'Seafood',chicken:'Chicken',vegetarian:'Vegetarian'};
 async function loadPortuguese(force=false){
@@ -56,7 +56,7 @@ async function loadPortuguese(force=false){
   status.textContent='A carregar receitas portuguesas…';
   try{
     const d=await fetch('https://www.themealdb.com/api/json/v1/1/filter.php?a=Portuguese').then(r=>r.json());
-    const ms=(d.meals||[]).map(m=>({externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:'Portuguesa',description:''}));
+    const ms=(d.meals||[]).map(m=>({language:'en',externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:'Portuguesa',description:''}));
     window.online={...(window.online||{}),...Object.fromEntries(ms.map(m=>[m.externalId,m]))};
     portugalLoaded=true;
     status.textContent=ms.length?ms.length+' receita(s) portuguesa(s) encontrada(s).':'Não encontrei receitas portuguesas neste momento.';
@@ -71,7 +71,7 @@ async function searchCategory(key){
   $('#searchStatus').textContent='A carregar '+cat+'…';
   try{
     const d=await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(cat)}`).then(r=>r.json());
-    const ms=(d.meals||[]).slice(0,24).map(m=>({externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:cat,description:''}));
+    const ms=(d.meals||[]).slice(0,24).map(m=>({language:'en',externalId:m.idMeal,name:m.strMeal,image:m.strMealThumb,category:cat,description:''}));
     window.online={...(window.online||{}),...Object.fromEntries(ms.map(m=>[m.externalId,m]))};
     $('#searchStatus').textContent=ms.length?`${ms.length} receita(s) em ${cat}.`:'Nada encontrado.';
     $('#searchResults').innerHTML=ms.map(m=>card(m,true)).join('')
@@ -94,7 +94,7 @@ async function getOnline(i){
   let d=await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${i}`).then(r=>r.json());
   const r=normalize(d.meals[0]);window.online=window.online||{};window.online[i]=r;return r
 }
-async function openOnline(i){show(await getOnline(i),true)}
+async function openOnline(i){try{show(await getOnline(i),true)}catch{toast('Não foi possível carregar a receita.')}}
 async function saveOnline(i){let r=await getOnline(i);if(recipes.some(x=>x.externalId===i))return toast('Já está guardada.');recipes.unshift({...r,id:id(),favorite:false,source:'online'});save();toast('Receita guardada.')}
 function openRecipe(i){let r=recipes.find(x=>x.id===i);if(r)show(r,false)}
 function show(r,ext){$('#detailBody').innerHTML=`${r.image?`<img class="detail-img" src="${esc(r.image)}" alt="">`:''}<h2>${esc(r.name)}</h2><p>${esc(r.description||'')}</p><div class="detail-grid"><div><h3>Ingredientes</h3><ul>${(r.ingredients||[]).map(x=>`<li><b>${esc(x.qty||'')}</b> ${esc(x.name)}</li>`).join('')}</ul></div><div><h3>Preparação</h3><ol>${(r.steps||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div></div>${ext?'':`<div class="dialog-actions"><button class="btn primary" onclick="addToShop('${r.id}')">Adicionar ingredientes às compras</button><button class="btn secondary" onclick="delRecipe('${r.id}')">Apagar</button></div>`}`;$('#detail').showModal()}
@@ -103,14 +103,14 @@ function addStep(x=''){let d=document.createElement('div');d.className='row step
 $('#addIngredient').onclick=()=>addIng();$('#addStep').onclick=()=>addStep();
 function openEditor(r=null){$('#recipeForm').reset();$('#recipeId').value=r?.id||'';$('#editorTitle').textContent=r?.id?'Editar receita':'Nova receita';$('#rName').value=r?.name||'';$('#rCategory').value=r?.category||'';$('#rTime').value=r?.time||'';$('#rImage').value=r?.image||'';$('#rDescription').value=r?.description||'';$('#rNotes').value=r?.notes||'';$('#ingredients').innerHTML='';(r?.ingredients?.length?r.ingredients:[{}]).forEach(addIng);$('#steps').innerHTML='';(r?.steps?.length?r.steps:['']).forEach(addStep);$('#editor').showModal()}
 function editRecipe(i){openEditor(recipes.find(x=>x.id===i))}
-$('#recipeForm').onsubmit=e=>{e.preventDefault();let rid=$('#recipeId').value,data={name:$('#rName').value.trim(),category:$('#rCategory').value.trim(),time:$('#rTime').value.trim(),image:$('#rImage').value.trim(),description:$('#rDescription').value.trim(),notes:$('#rNotes').value.trim(),ingredients:$$('.row').filter(x=>x.querySelector('.ingName')).map(x=>({name:x.querySelector('.ingName').value.trim(),qty:x.querySelector('.ingQty').value.trim()})).filter(x=>x.name),steps:$$('.stepText').map(x=>x.value.trim()).filter(Boolean)};if(rid){let i=recipes.findIndex(x=>x.id===rid);recipes[i]={...recipes[i],...data}}else recipes.unshift({...data,id:id(),favorite:false,source:'local'});save();$('#editor').close();go('minhas');toast('Receita guardada.')};
-function delRecipe(i){if(confirm('Apagar esta receita?')){recipes=recipes.filter(x=>x.id!==i);save();$('#detail').close()}}
-function addShopItemLocal(name,qty=''){
+$('#recipeForm').onsubmit=e=>{e.preventDefault();let rid=$('#recipeId').value,data={language:window.SaboresLanguage?.get()||'pt',name:$('#rName').value.trim(),category:$('#rCategory').value.trim(),time:$('#rTime').value.trim(),image:$('#rImage').value.trim(),description:$('#rDescription').value.trim(),notes:$('#rNotes').value.trim(),ingredients:$$('.row').filter(x=>x.querySelector('.ingName')).map(x=>({name:x.querySelector('.ingName').value.trim(),qty:x.querySelector('.ingQty').value.trim()})).filter(x=>x.name),steps:$$('.stepText').map(x=>x.value.trim()).filter(Boolean)};if(rid){let i=recipes.findIndex(x=>x.id===rid);recipes[i]={...recipes[i],...data}}else recipes.unshift({...data,id:id(),favorite:false,language:window.SaboresLanguage?.get()||'pt',source:'local'});save();$('#editor').close();go('minhas');toast('Receita guardada.')};
+function delRecipe(i){if(confirm(window.SaboresLanguage?.translate('Apagar esta receita?')||'Apagar esta receita?')){recipes=recipes.filter(x=>x.id!==i);save();$('#detail').close()}}
+function addShopItemLocal(name,qty='',language=window.SaboresLanguage?.get()||'pt'){
   const key=normalizeShopName(name);if(!key)return;
   const ex=shop.find(x=>normalizeShopName(x.name)===key);
-  if(ex){ex.qty=mergeQty(ex.qty,qty);ex.done=false}else shop.push({id:id(),name:name.trim(),qty:(qty||'').trim(),done:false})
+  if(ex){ex.qty=mergeQty(ex.qty,qty);ex.done=false}else shop.push({id:id(),name:name.trim(),language,qty:(qty||'').trim(),done:false})
 }
-function addToShop(i){let r=recipes.find(x=>x.id===i);(r.ingredients||[]).forEach(x=>addShopItemLocal(x.name,x.qty));save();toast('Ingredientes adicionados e repetidos agrupados.')}
+function addToShop(i){let r=recipes.find(x=>x.id===i);(r.ingredients||[]).forEach(x=>addShopItemLocal(x.name,x.qty,r.language||(r.externalId?'en':'pt')));save();toast('Ingredientes adicionados e repetidos agrupados.')}
 $('#shopForm').onsubmit=e=>{e.preventDefault();const n=$('#shopName').value.trim(),q=$('#shopQty').value.trim();if(!n)return;addShopItemLocal(n,q);e.target.reset();save()};
 function renderShop(){
   const pending=shop.filter(x=>!x.done).length,done=shop.length-pending;
@@ -142,7 +142,7 @@ function parseVideoRecipeText(text=''){
 
   let mode='';
   const ingredientHeading=/^(ingredientes?|ingredients?)\s*:?$/i;
-  const stepHeading=/^(prepara(?:ç|c)ão|modo de preparo|modo de prepara(?:ç|c)ão|passos?|instructions?|preparation)\s*:?$/i;
+  const stepHeading=/^(préparation|étapes?|prepara(?:ç|c)ão|modo de preparo|modo de prepara(?:ç|c)ão|passos?|instructions?|preparation)\s*:?$/i;
   const qty=/^(\d+(?:[.,]\d+)?|\d+\/\d+|½|¼|¾|⅓|⅔)\s*(kg|g|mg|l|ml|cl|dl|chávena(?:s)?|xicara(?:s)?|xícara(?:s)?|colher(?:es)?(?:\s+de\s+(?:sopa|chá))?|c\.\s*(?:sopa|chá)|cup(?:s)?|tbsp|tsp|unidades?|un\.?|dentes?)?\s+(.+)$/i;
 
   for(const original of lines){
@@ -194,8 +194,10 @@ if(videoImportForm){
     const status=$('#videoImportStatus');
     const preview=$('#videoImportPreview');
 
-    if(!/https?:\/\/(?:www\.|vm\.|vt\.)?tiktok\.com\//i.test(url)){
-      status.textContent='Cola um link válido do TikTok.';
+    let videoHost='';try{videoHost=new URL(url).hostname.toLowerCase()}catch{}
+    const youtube=['youtube.com','www.youtube.com','m.youtube.com','youtu.be'].includes(videoHost);
+    if(!youtube&&!['tiktok.com','www.tiktok.com','vm.tiktok.com','vt.tiktok.com'].includes(videoHost)){
+      status.textContent='Cola um link válido do TikTok ou YouTube.';
       return;
     }
 
@@ -212,7 +214,7 @@ if(videoImportForm){
       const parsed=parseVideoRecipeText(sourceText);
       const name=recipeNameFromVideoText(sourceText||data.title);
       const notes=[
-        'Fonte TikTok: '+url,
+        'Fonte '+(youtube?'YouTube':'TikTok')+': '+url,
         data.author_name?'Criador: '+data.author_name:''
       ].filter(Boolean).join('\n');
 
@@ -229,7 +231,8 @@ if(videoImportForm){
         $('#videoImport').close();
         openEditor({
           name,
-          category:'TikTok',
+          category:youtube?'YouTube':'TikTok',
+          language:$('#videoSourceLanguage').value,
           image:data.thumbnail_url||'',
           description:sourceText,
           ingredients:parsed.ingredients,
