@@ -101,11 +101,19 @@ body.dark .family-legacy{background:linear-gradient(135deg,#21182f,#2d2140)}
 @keyframes subtleLogoLeave{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.94) translateY(-7px)}}
 @media(prefers-reduced-motion:reduce){#splashScreen img,#splashScreen.finish img{animation:none!important}}
 
-/* Full logo artwork: retain the complete ring and its native square proportions. */
-.brand img{width:68px;height:68px;object-fit:contain;border-radius:0;box-shadow:none;flex-shrink:0}
-#splashScreen img{width:clamp(220px,48vw,340px)!important;height:auto!important;max-height:min(64vh,340px)!important;aspect-ratio:1;object-fit:contain;border-radius:0!important;box-shadow:none!important}
-@media(max-width:600px){.topbar{flex-wrap:wrap;gap:8px}.brand{flex:1;min-width:0}.brand img{width:58px;height:58px}.brand strong{font-size:.95rem}.brand small{font-size:.7rem}.language-control{margin-left:auto}.topbar .btn{flex-shrink:0}}
-
-/* Circular presentation keeps the complete gold ring inside the image. */
-.brand img{border-radius:50%}
-#splashScreen img{border-radius:50%!important}
+/* Complete circular artwork and responsive header. */
+.brand img{width:68px;height:68px;object-fit:contain;border-radius:50%;box-shadow:none;flex-shrink:0}
+#splashScreen img{width:clamp(220px,48vw,340px)!important;height:auto!important;max-height:min(64vh,340px)!important;aspect-ratio:1;object-fit:contain;border-radius:50%!important;box-shadow:none!important}
+#minhas .page-row{margin-bottom:22px}
+@media(max-width:620px){
+  .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand theme" "language account";gap:12px 16px;padding:12px 16px}
+  .brand{grid-area:brand;min-width:0;gap:10px}
+  .brand img{width:58px;height:58px}
+  .brand strong{font-size:1rem;line-height:1.2;overflow-wrap:normal}
+  .brand small{display:none}
+  #themeBtn{grid-area:theme;justify-self:end}
+  .language-control{grid-area:language;justify-self:start;margin:0;gap:8px}
+  .language-control select{max-width:none;min-height:42px;padding:8px}
+  #cloudAccountBtn{grid-area:account;justify-self:end;white-space:nowrap;min-height:42px}
+  #minhas .page-row{gap:18px;margin-bottom:22px}
+}
